@@ -44,10 +44,10 @@ func (fd *frontendDocument) formatParagraph(ctx context.Context, args ...object.
 	for k, v := range lst {
 		switch k {
 		case "width":
-			if v.Type() == "backend.sp" {
+			if v.Type() == "bag.scaledpoint" {
 				wd = v.(*rbag.RSP).Value
 			} else {
-				return object.ArgsErrorf("frontend.format_paragraph() expects a backend.sp argument (width)")
+				return object.ArgsErrorf("frontend.format_paragraph() expects a bag.scaledpoint argument (width)")
 			}
 		case "text":
 			if v.Type() == "frontend.text" {
@@ -56,16 +56,16 @@ func (fd *frontendDocument) formatParagraph(ctx context.Context, args ...object.
 				return object.ArgsErrorf("frontend.format_paragraph() expects a frontend.text argument (text)")
 			}
 		case "leading":
-			if v.Type() == "backend.sp" {
+			if v.Type() == "bag.scaledpoint" {
 				opts = append(opts, frontend.Leading(v.(*rbag.RSP).Value))
 			} else {
-				return object.ArgsErrorf("frontend.format_paragraph() expects a backend.sp argument (leading)")
+				return object.ArgsErrorf("frontend.format_paragraph() expects a bag.scaledpoint argument (leading)")
 			}
 		case "font_size":
-			if v.Type() == "backend.sp" {
+			if v.Type() == "bag.scaledpoint" {
 				opts = append(opts, frontend.FontSize(v.(*rbag.RSP).Value))
 			} else {
-				return object.ArgsErrorf("frontend.format_paragraph() expects a backend.sp argument (font_size)")
+				return object.ArgsErrorf("frontend.format_paragraph() expects a bag.scaledpoint argument (font_size)")
 			}
 		case "family":
 			if v.Type() == "frontend.fontfamily" {

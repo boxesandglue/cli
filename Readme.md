@@ -1,3 +1,12 @@
+# Command line for boxes and glue
+
+Experimental!
+
+## Installation
+
+When you have a Go installation: `go install github.com/boxesandglue/cli/bag@latest`
+
+Start with `bag myfile.rsr`
 
 `main.rsr`
 
@@ -54,3 +63,6 @@ printf("finished in %.2fms\n",time.since(now) * 1000)
 
 ```
 
+## Other
+
+Contact: gundlach@speedata.de

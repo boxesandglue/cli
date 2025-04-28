@@ -5,12 +5,17 @@ import (
 
 	"github.com/boxesandglue/boxesandglue/backend/bag"
 	"github.com/boxesandglue/boxesandglue/backend/document"
-	backenddoc "github.com/boxesandglue/boxesandglue/backend/document"
 	"github.com/boxesandglue/boxesandglue/backend/node"
+
+	backenddoc "github.com/boxesandglue/boxesandglue/backend/document"
+	rnode "github.com/boxesandglue/cli/risor/backend/node"
+
 	"github.com/risor-io/risor/object"
 	"github.com/risor-io/risor/op"
 )
 
+// Page represents a PDF page object.
+// It is a wrapper around the backend document page object.
 type Page struct {
 	Value *document.Page
 }
@@ -28,16 +33,19 @@ func (p *Page) outputAt(ctx context.Context, args ...object.Object) object.Objec
 	firstArg := args[0]
 	secondarg := args[1]
 	thirdArg := args[2]
-	if firstArg.Type() != "backend.sp" {
-		return object.ArgsErrorf("page.output_at() expects a backend.sp argument (x-coordinate), got %s", firstArg.Type())
+	if firstArg.Type() != "bag.scaledpoint" {
+		return object.ArgsErrorf("page.output_at() expects a bag.scaledpoint argument (x-coordinate), got %s", firstArg.Type())
 	}
-	if secondarg.Type() != "backend.sp" {
-		return object.ArgsErrorf("page.output_at() expects a backend.sp argument (y-coordinate), got %s", secondarg.Type())
+	if secondarg.Type() != "bag.scaledpoint" {
+		return object.ArgsErrorf("page.output_at() expects a bag.scaledpoint argument (y-coordinate), got %s", secondarg.Type())
 	}
-	if thirdArg.Type() != "node.node" {
+	var n *rnode.Node
+	var ok bool
+	if n, ok = thirdArg.(*rnode.Node); !ok {
 		return object.ArgsErrorf("page.output_at() expects a node.node argument (node)")
 	}
-	vl := thirdArg.Interface().(*node.VList)
+
+	vl := n.Interface().(*node.VList)
 	p.Value.OutputAt(firstArg.Interface().(bag.ScaledPoint), secondarg.Interface().(bag.ScaledPoint), vl)
 	return nil
 }
@@ -65,7 +73,7 @@ func (p *Page) Interface() interface{} {
 	return p.Value
 }
 
-// Returns True if the given object is equal to this object.
+// Equals returns True if the given object is equal to this object.
 func (p *Page) Equals(other object.Object) object.Object {
 	return object.False
 }

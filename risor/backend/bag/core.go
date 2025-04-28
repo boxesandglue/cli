@@ -9,13 +9,17 @@ import (
 	"github.com/risor-io/risor/op"
 )
 
+// ScaledPointType is the type of the object.
+const ScaledPointType = "bag.scaledpoint"
+
+// RSP is a wrapper around bag.ScaledPoint to make it an object.Object.
 type RSP struct {
 	Value bag.ScaledPoint
 }
 
 // Type of the object.
 func (sp *RSP) Type() object.Type {
-	return "backend.sp"
+	return ScaledPointType
 }
 
 // Inspect returns a string representation of the given object.
@@ -28,7 +32,7 @@ func (sp *RSP) Interface() interface{} {
 	return sp.Value
 }
 
-// Returns True if the given object is equal to this object.
+// Equals returns True if the given object is equal to this object.
 func (sp *RSP) Equals(other object.Object) object.Object {
 	if other.Type() != sp.Type() {
 		return object.False
@@ -86,6 +90,7 @@ func bagSP(ctx context.Context, args ...object.Object) object.Object {
 // Module returns the bag module.
 func Module() *object.Module {
 	return object.NewBuiltinsModule("bag", map[string]object.Object{
-		"sp": object.NewBuiltin("bag.sp", bagSP),
+		"sp":     object.NewBuiltin("bag.sp", bagSP),
+		"logger": &logger{value: bag.Logger},
 	})
 }

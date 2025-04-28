@@ -3,9 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
-	"github.com/boxesandglue/cli/risor/backend/bag"
+	"github.com/boxesandglue/boxesandglue/backend/bag"
+	rbag "github.com/boxesandglue/cli/risor/backend/bag"
+	rnode "github.com/boxesandglue/cli/risor/backend/node"
+
 	"github.com/boxesandglue/cli/risor/frontend"
 	"github.com/risor-io/risor"
 )
@@ -17,7 +21,8 @@ func dothings() error {
 	}
 
 	ctx := context.Background()
-
+	setupLog()
+	bag.SetLogger(slog.Default())
 	wd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -28,7 +33,8 @@ func dothings() error {
 		risor.WithLocalImporter(wd),
 		risor.WithGlobals(map[string]any{
 			"frontend": frontend.Module(),
-			"bag":      bag.Module(),
+			"bag":      rbag.Module(),
+			"node":     rnode.Module(),
 		}))
 	if err != nil {
 		return err

@@ -1,5 +1,7 @@
 github.com/beevik/etree v1.5.0 h1:iaQZFSDS+3kYZiGoc9uKeOkUY3nYMXOKLl6KIJxiJWs=
 github.com/beevik/etree v1.5.0/go.mod h1:gPNJNaBGVZ9AwsidazFZyygnd+0pAU38N4D+WemwKNs=
+github.com/benoitkugler/textlayout-testdata v0.1.1 h1:AvFxBxpfrQd8v55qH59mZOJOQjtD6K2SFe9/HvnIbJk=
+github.com/benoitkugler/textlayout-testdata v0.1.1/go.mod h1:i/qZl09BbUOtd7Bu/W1CAubRwTWrEXWq6JwMkw8wYxo=
 github.com/boxesandglue/baseline-pdf v1.0.6 h1:qGCMIVionNgS7UpmrOTaJIcAXFSaqrALtECTqIcV0E0=
 github.com/boxesandglue/baseline-pdf v1.0.6/go.mod h1:hk72EshgS7535d8pTboigR3IHblDkFa789AEmBE57BU=
 github.com/boxesandglue/boxesandglue v0.1.6 h1:uYNDOEsjt+yGeNimfA6ziJL6sjpInBN9DaVLDwbU5cM=
