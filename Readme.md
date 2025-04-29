@@ -1,3 +1,6 @@
+[![Documentation](https://img.shields.io/badge/doc-documentation-73FA79)](https://boxesandglue.dev/cli)
+
+
 # Command line for boxes and glue
 
 Experimental and incomplete
@@ -67,4 +70,4 @@ Contact: gundlach@speedata.de<br>
 License: BSD-3 clause<br>
 Status: experimental, unstable, expect changes<br>
 Documentation: <https://boxesandglue.dev/cli><br>
-boxes and glue is a registered trademark
+Legal info: boxes and glue is a registered trademark
