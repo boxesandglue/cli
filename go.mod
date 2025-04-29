@@ -2,7 +2,7 @@ module github.com/boxesandglue/cli
 
 require (
 	github.com/boxesandglue/baseline-pdf v1.0.6
-	github.com/boxesandglue/boxesandglue v0.1.6
+	github.com/boxesandglue/boxesandglue v0.1.7
 	github.com/risor-io/risor v1.7.0
 )
 

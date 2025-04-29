@@ -16,12 +16,13 @@ import (
 	"github.com/risor-io/risor/op"
 )
 
+// Document represents a PDF document object.
 type Document struct {
 	PDFDoc      *document.PDFDocument
 	Attachments *object.List
 }
 
-func (doc *Document) CreateImageNodeFromImagefile(ctx context.Context, args ...object.Object) object.Object {
+func (doc *Document) createImageNodeFromImagefile(ctx context.Context, args ...object.Object) object.Object {
 	if len(args) != 3 {
 		return object.ArgsErrorf("document.create_image_node_from_imagefile() takes exactly three arguments")
 	}
@@ -104,6 +105,28 @@ func (doc *Document) loadImageFile(ctx context.Context, args ...object.Object) o
 	return &rpdf.ImageFile{Value: imgf}
 }
 
+func (doc *Document) outputXMLDump(ctx context.Context, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return object.ArgsErrorf("document.output_xml_dump() takes exactly one argument (filename)")
+	}
+	if args[0].Type() != object.STRING {
+		return object.ArgsErrorf("document.output_xml_dump() expects a string argument (filename)")
+	}
+	filename := args[0].(*object.String).Value()
+	if filename == "" {
+		return object.ArgsErrorf("document.output_xml_dump() expects a non-empty string argument (filename)")
+	}
+	w, err := os.Create(filename)
+	if err != nil {
+		return object.NewError(err)
+	}
+	defer w.Close()
+	if err = doc.PDFDoc.OutputXMLDump(w); err != nil {
+		return object.NewError(err)
+	}
+	return nil
+}
+
 // Type of the object.
 func (doc *Document) Type() object.Type {
 	return "backend.document"
@@ -130,7 +153,7 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 	case "attachments":
 		return doc.Attachments, true
 	case "create_image_node_from_imagefile":
-		return object.NewBuiltin("document.create_image_node_from_imagefile", doc.CreateImageNodeFromImagefile), true
+		return object.NewBuiltin("document.create_image_node_from_imagefile", doc.createImageNodeFromImagefile), true
 	case "filename":
 		return object.NewString(doc.PDFDoc.Filename), true
 	case "finish":
@@ -139,55 +162,39 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 		return object.NewBuiltin("document.load_image_file", doc.loadImageFile), true
 	case "new_page":
 		return object.NewBuiltin("document.new_page", doc.newPage), true
+	case "output_xml_dump":
+		return object.NewBuiltin("document.output_xml_dump", doc.outputXMLDump), true
 	}
 	return nil, false
 }
 
-/*
-   Bleed                bag.ScaledPoint
-   ColorProfile         *ColorProfile
-   CompressLevel        uint
-   CreationDate         time.Time
-   CurrentPage          *Page
-   DefaultLanguage      *lang.Lang
-   DefaultPageHeight    bag.ScaledPoint
-   DefaultPageWidth     bag.ScaledPoint
-   DumpOutput           bool
-   Faces                []*pdf.Face
-   Format               Format
-   Languages            map[string]*lang.Lang
-   Pages                []*Page
-   RootStructureElement *StructureElement
-   ShowCutmarks         bool
-   ShowHyperlinks       bool
-   Spotcolors           []*color.Color
-   SuppressInfo         bool
-   ViewerPreferences    map[string]string
-*/
-
 // SetAttr sets the attribute with the given name on this object.
 func (doc *Document) SetAttr(name string, value object.Object) error {
 	switch name {
-	case "language":
-		if value.Type() == object.STRING {
-			l, err := frontend.GetLanguage(value.(*object.String).Value())
-			if err != nil {
-				return err
-			}
-			doc.PDFDoc.SetDefaultLanguage(l)
-			return nil
-		}
-		if value.Type() == "backend.lang" {
-			l := value.(*rlang.Lang).Value
-			doc.PDFDoc.SetDefaultLanguage(l)
-			return nil
-		}
 	case "author":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Author = value.(*object.String).Value()
 			return nil
 		}
 		return object.Errorf("author must be a string")
+	case "bleed":
+		if value.Type() == rbag.ScaledPointType {
+			doc.PDFDoc.Bleed = value.(*rbag.RSP).Value
+			return nil
+		}
+		return object.Errorf("bleed must be a bag.scaledpoint")
+	case "compresslevel":
+		if value.Type() == object.INT {
+			doc.PDFDoc.CompressLevel = uint(value.(*object.Int).Value())
+			return nil
+		}
+		return object.Errorf("compresslevel must be an int")
+	case "creation_date":
+		if value.Type() == object.TIME {
+			doc.PDFDoc.CreationDate = value.(*object.Time).Value()
+			return nil
+		}
+		return object.Errorf("creation_date must be a time")
 	case "creator":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Creator = value.(*object.String).Value()
@@ -206,12 +213,73 @@ func (doc *Document) SetAttr(name string, value object.Object) error {
 			return nil
 		}
 		return object.Errorf("default_page_width must be a bag.scaledpoint")
+	case "dump_output":
+		if value.Type() == object.BOOL {
+			doc.PDFDoc.DumpOutput = value.(*object.Bool).Value()
+			return nil
+		}
+		return object.Errorf("dump_output must be a bool")
+	case "format":
+		if value.Type() == object.STRING {
+			switch value.(*object.String).Value() {
+			case "":
+				doc.PDFDoc.Format = document.FormatPDF
+			case "PDF/A-3a":
+				doc.PDFDoc.Format = document.FormatPDFA3a
+			case "PDF/A-3b":
+				doc.PDFDoc.Format = document.FormatPDFA3b
+			case "PDF/X-1a":
+				doc.PDFDoc.Format = document.FormatPDFX1a
+			case "PDF/X-3":
+				doc.PDFDoc.Format = document.FormatPDFX3
+			case "PDF/X-4":
+				doc.PDFDoc.Format = document.FormatPDFX4
+			case "PDF/UA":
+				doc.PDFDoc.Format = document.FormatPDFUA
+			default:
+				return object.Errorf("format must be one of \"\", \"PDF/A-3a\", \"PDF/A-3b\", \"PDF/X-1a\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\"")
+			}
+			return nil
+		}
+		return object.Errorf("format must be a string (one of \"\", \"PDF/A-3a\", \"PDF/A-3b\", \"PDF/X-1a\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\")")
 	case "keywords":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Keywords = value.(*object.String).Value()
 			return nil
 		}
 		return object.Errorf("keywords must be a string")
+	case "language":
+		if value.Type() == object.STRING {
+			l, err := frontend.GetLanguage(value.(*object.String).Value())
+			if err != nil {
+				return err
+			}
+			doc.PDFDoc.SetDefaultLanguage(l)
+			return nil
+		}
+		if value.Type() == "backend.lang" {
+			l := value.(*rlang.Lang).Value
+			doc.PDFDoc.SetDefaultLanguage(l)
+			return nil
+		}
+	case "show_cutmarks":
+		if value.Type() == object.BOOL {
+			doc.PDFDoc.ShowCutmarks = value.(*object.Bool).Value()
+			return nil
+		}
+		return object.Errorf("show_cutmarks must be a bool")
+	case "show_hyperlinks":
+		if value.Type() == object.BOOL {
+			doc.PDFDoc.ShowHyperlinks = value.(*object.Bool).Value()
+			return nil
+		}
+		return object.Errorf("show_hyperlinks must be a bool")
+	case "suppressinfo":
+		if value.Type() == object.BOOL {
+			doc.PDFDoc.SuppressInfo = value.(*object.Bool).Value()
+			return nil
+		}
+		return object.Errorf("suppressinfo must be a bool")
 	case "subject":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Subject = value.(*object.String).Value()
@@ -224,6 +292,19 @@ func (doc *Document) SetAttr(name string, value object.Object) error {
 			return nil
 		}
 		return object.Errorf("title must be a string")
+	case "viewer_preferences":
+		if value.Type() == object.MAP {
+			m := value.(*object.Map).Value()
+			doc.PDFDoc.ViewerPreferences = make(map[string]string)
+			for k, v := range m {
+				if v.Type() != object.STRING {
+					return object.Errorf("viewer_preferences must be a map of strings")
+				}
+				doc.PDFDoc.ViewerPreferences[k] = v.(*object.String).Value()
+			}
+			return nil
+		}
+		return object.Errorf("viewer_preferences must be a map")
 	}
 	return object.Errorf("cannot set attribute %s on document", name)
 }
