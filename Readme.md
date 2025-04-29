@@ -1,19 +1,18 @@
 # Command line for boxes and glue
 
-Experimental!
+Experimental and incomplete
 
 ## Installation
 
 When you have a Go installation: `go install github.com/boxesandglue/cli/bag@latest`
 
-Start with `bag myfile.rsr`
+You can also download the latest binaries at https://github.com/boxesandglue/cli/releases/latest
 
-`main.rsr`
+## Sample document
+
+Start with `bag myfile.rsr`, where the file `myfile.rsr` looks like this:
 
 ```go
-import frontend
-import bag
-
 now := time.now()
 
 func setup_fonts(f) {
@@ -60,9 +59,12 @@ p.shipout()
 f.doc.finish()
 
 printf("finished in %.2fms\n",time.since(now) * 1000)
-
 ```
 
 ## Other
 
-Contact: gundlach@speedata.de
+Contact: gundlach@speedata.de<br>
+License: BSD-3 clause<br>
+Status: experimental, unstable, expect changes<br>
+Documentation: <https://boxesandglue.dev/cli><br>
+boxes and glue is a registered trademark
