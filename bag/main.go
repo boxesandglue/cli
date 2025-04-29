@@ -3,10 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 
-	"github.com/boxesandglue/boxesandglue/backend/bag"
 	rbag "github.com/boxesandglue/cli/risor/backend/bag"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
 
@@ -15,14 +13,17 @@ import (
 )
 
 func dothings() error {
-	data, err := os.ReadFile("main.rsr")
+	if len(os.Args) != 2 {
+		return fmt.Errorf("usage: %s <filename>", os.Args[0])
+	}
+	data, err := os.ReadFile(os.Args[1])
 	if err != nil {
 		return err
 	}
 
 	ctx := context.Background()
 	setupLog()
-	bag.SetLogger(slog.Default())
+
 	wd, err := os.Getwd()
 	if err != nil {
 		return err

@@ -15,7 +15,9 @@ import (
 
 type frontendDocument struct {
 	// The filename of the PDF file
-	doc *frontend.Document
+	value *frontend.Document
+	// The document object
+	doc *rdocument.Document
 }
 
 func (fd *frontendDocument) newFontFamily(ctx context.Context, args ...object.Object) object.Object {
@@ -26,7 +28,7 @@ func (fd *frontendDocument) newFontFamily(ctx context.Context, args ...object.Ob
 		return object.ArgsErrorf("frontend.new_fontfamily() expects a string argument (font family name)")
 	}
 	familyName := args[0].(*object.String).Value()
-	return &FontFamily{Value: fd.doc.NewFontFamily(familyName)}
+	return &FontFamily{Value: fd.value.NewFontFamily(familyName)}
 }
 
 func (fd *frontendDocument) formatParagraph(ctx context.Context, args ...object.Object) object.Object {
@@ -78,7 +80,7 @@ func (fd *frontendDocument) formatParagraph(ctx context.Context, args ...object.
 			// fmt.Println(`~~> k,v`, k, v)
 		}
 	}
-	vlist, _, err := fd.doc.FormatParagraph(ftext, wd, opts...)
+	vlist, _, err := fd.value.FormatParagraph(ftext, wd, opts...)
 	if err != nil {
 		return object.NewError(err)
 	}
@@ -93,12 +95,12 @@ func (fd *frontendDocument) Type() object.Type {
 
 // Inspect returns a string representation of the given object.
 func (fd *frontendDocument) Inspect() string {
-	return fd.doc.Doc.Filename
+	return fd.value.Doc.Filename
 }
 
 // Interface converts the given object to a native Go value.
 func (fd *frontendDocument) Interface() interface{} {
-	return fd.doc
+	return fd.value
 }
 
 // Returns True if the given object is equal to this object.
@@ -110,7 +112,7 @@ func (fd *frontendDocument) Equals(other object.Object) object.Object {
 func (fd *frontendDocument) GetAttr(name string) (object.Object, bool) {
 	switch name {
 	case "doc":
-		return &rdocument.Document{PDFDoc: fd.doc.Doc}, true
+		return fd.doc, true
 	case "new_fontfamily":
 		return object.NewBuiltin("frontend.new_fontfamily", fd.newFontFamily), true
 	case "format_paragraph":

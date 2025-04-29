@@ -8,6 +8,8 @@ import (
 	"github.com/risor-io/risor/op"
 )
 
+const LoggerType = "slog.logger"
+
 type logger struct {
 	value *slog.Logger
 }
@@ -45,7 +47,7 @@ func (l *logger) log(lvl string) func(context.Context, ...object.Object) object.
 
 // Type of the object.
 func (l *logger) Type() object.Type {
-	return "slog.logger"
+	return LoggerType
 }
 
 // Inspect returns a string representation of the given object.
@@ -67,13 +69,13 @@ func (l *logger) Equals(other object.Object) object.Object {
 func (l *logger) GetAttr(name string) (object.Object, bool) {
 	switch name {
 	case "debug":
-		return object.NewBuiltin("log", l.log("debug")), true
+		return object.NewBuiltin("log.debug", l.log("debug")), true
 	case "info":
-		return object.NewBuiltin("log", l.log("info")), true
+		return object.NewBuiltin("log.info", l.log("info")), true
 	case "warn":
-		return object.NewBuiltin("log", l.log("warn")), true
+		return object.NewBuiltin("log.warn", l.log("warn")), true
 	case "error":
-		return object.NewBuiltin("log", l.log("error")), true
+		return object.NewBuiltin("log.error", l.log("error")), true
 	}
 	return nil, false
 }

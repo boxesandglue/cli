@@ -2,10 +2,12 @@ package document
 
 import (
 	"context"
+	"os"
 
+	"github.com/boxesandglue/boxesandglue/backend/bag"
 	"github.com/boxesandglue/boxesandglue/backend/document"
 	"github.com/boxesandglue/boxesandglue/frontend"
-	"github.com/boxesandglue/cli/risor/backend/bag"
+	rbag "github.com/boxesandglue/cli/risor/backend/bag"
 	rlang "github.com/boxesandglue/cli/risor/backend/lang"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
 	rpdf "github.com/boxesandglue/cli/risor/baseline-pdf"
@@ -15,7 +17,8 @@ import (
 )
 
 type Document struct {
-	PDFDoc *document.PDFDocument
+	PDFDoc      *document.PDFDocument
+	Attachments *object.List
 }
 
 func (doc *Document) CreateImageNodeFromImagefile(ctx context.Context, args ...object.Object) object.Object {
@@ -51,6 +54,37 @@ func (doc *Document) finish(ctx context.Context, args ...object.Object) object.O
 	if len(args) != 0 {
 		return object.ArgsErrorf("document.finish() takes no arguments")
 	}
+
+	attachments := make([]document.Attachment, 0, doc.Attachments.Size())
+	for _, entry := range doc.Attachments.Interface().([]any) {
+		attachment := document.Attachment{}
+		value := entry.(map[string]any)
+		for k, v := range value {
+			switch k {
+			case "filename":
+				if v, ok := v.(string); ok {
+					data, err := os.ReadFile(v)
+					if err != nil {
+						return object.NewError(err)
+					}
+					attachment.Name = v
+					attachment.Data = data
+				}
+			case "mimetype":
+				if v, ok := v.(string); ok {
+					attachment.MimeType = v
+				}
+			case "description":
+				if v, ok := v.(string); ok {
+					attachment.Description = v
+				}
+			}
+		}
+		bag.Logger.Info("Add attachment", "filename", attachment.Name)
+		attachments = append(attachments, attachment)
+	}
+
+	doc.PDFDoc.Attachments = attachments
 	doc.PDFDoc.Finish()
 	return nil
 }
@@ -93,6 +127,8 @@ func (doc *Document) Equals(other object.Object) object.Object {
 // GetAttr returns the attribute with the given name from this object.
 func (doc *Document) GetAttr(name string) (object.Object, bool) {
 	switch name {
+	case "attachments":
+		return doc.Attachments, true
 	case "create_image_node_from_imagefile":
 		return object.NewBuiltin("document.create_image_node_from_imagefile", doc.CreateImageNodeFromImagefile), true
 	case "filename":
@@ -108,7 +144,6 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 }
 
 /*
-   Attachments          []Attachment
    Bleed                bag.ScaledPoint
    ColorProfile         *ColorProfile
    CompressLevel        uint
@@ -160,14 +195,14 @@ func (doc *Document) SetAttr(name string, value object.Object) error {
 		}
 		return object.Errorf("creator must be a string")
 	case "default_page_height":
-		if value.Type() == bag.ScaledPointType {
-			doc.PDFDoc.DefaultPageHeight = value.(*bag.RSP).Value
+		if value.Type() == rbag.ScaledPointType {
+			doc.PDFDoc.DefaultPageHeight = value.(*rbag.RSP).Value
 			return nil
 		}
 		return object.Errorf("default_page_height must be a bag.scaledpoint")
 	case "default_page_width":
-		if value.Type() == bag.ScaledPointType {
-			doc.PDFDoc.DefaultPageWidth = value.(*bag.RSP).Value
+		if value.Type() == rbag.ScaledPointType {
+			doc.PDFDoc.DefaultPageWidth = value.(*rbag.RSP).Value
 			return nil
 		}
 		return object.Errorf("default_page_width must be a bag.scaledpoint")

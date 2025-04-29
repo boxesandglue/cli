@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/boxesandglue/boxesandglue/frontend"
+	"github.com/boxesandglue/cli/risor/backend/document"
 	rlang "github.com/boxesandglue/cli/risor/backend/lang"
 	"github.com/risor-io/risor/object"
 )
@@ -84,7 +85,8 @@ func frontendNew(ctx context.Context, args ...object.Object) object.Object {
 	if err != nil {
 		return object.NewError(err)
 	}
-	return &frontendDocument{doc: doc}
+	fd := &frontendDocument{value: doc, doc: &document.Document{PDFDoc: doc.Doc, Attachments: object.NewList(nil)}}
+	return fd
 }
 
 func newText(ctx context.Context, args ...object.Object) object.Object {

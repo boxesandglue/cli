@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+
+	"github.com/boxesandglue/boxesandglue/backend/bag"
 )
 
 var (
@@ -55,5 +57,6 @@ func (lh *logHandler) WithGroup(name string) slog.Handler {
 func setupLog() {
 	sl := slog.New(&logHandler{})
 	slog.SetDefault(sl)
+	bag.SetLogger(slog.Default())
 	return
 }
