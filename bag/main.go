@@ -12,6 +12,9 @@ import (
 	"github.com/risor-io/risor"
 )
 
+// Version is the version of the program.
+const Version = "0.1.0"
+
 func dothings() error {
 	if len(os.Args) != 2 {
 		return fmt.Errorf("usage: %s <filename>", os.Args[0])

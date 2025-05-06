@@ -123,7 +123,7 @@ func (fd *frontendDocument) GetAttr(name string) (object.Object, bool) {
 
 // SetAttr sets the attribute with the given name on this object.
 func (fd *frontendDocument) SetAttr(name string, value object.Object) error {
-	return nil
+	return object.Errorf("cannot set attribute %s on text", name)
 }
 
 // IsTruthy returns true if the object is considered "truthy".

@@ -164,6 +164,8 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 		return object.NewBuiltin("document.new_page", doc.newPage), true
 	case "output_xml_dump":
 		return object.NewBuiltin("document.output_xml_dump", doc.outputXMLDump), true
+	case "pdf_writer":
+		return &rpdf.PDF{Value: doc.PDFDoc.PDFWriter}, true
 	}
 	return nil, false
 }
@@ -224,12 +226,8 @@ func (doc *Document) SetAttr(name string, value object.Object) error {
 			switch value.(*object.String).Value() {
 			case "":
 				doc.PDFDoc.Format = document.FormatPDF
-			case "PDF/A-3a":
-				doc.PDFDoc.Format = document.FormatPDFA3a
 			case "PDF/A-3b":
 				doc.PDFDoc.Format = document.FormatPDFA3b
-			case "PDF/X-1a":
-				doc.PDFDoc.Format = document.FormatPDFX1a
 			case "PDF/X-3":
 				doc.PDFDoc.Format = document.FormatPDFX3
 			case "PDF/X-4":
@@ -237,11 +235,11 @@ func (doc *Document) SetAttr(name string, value object.Object) error {
 			case "PDF/UA":
 				doc.PDFDoc.Format = document.FormatPDFUA
 			default:
-				return object.Errorf("format must be one of \"\", \"PDF/A-3a\", \"PDF/A-3b\", \"PDF/X-1a\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\"")
+				return object.Errorf("format must be one of \"\", \"PDF/A-3b\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\"")
 			}
 			return nil
 		}
-		return object.Errorf("format must be a string (one of \"\", \"PDF/A-3a\", \"PDF/A-3b\", \"PDF/X-1a\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\")")
+		return object.Errorf("format must be a string (one of \"\", \"PDF/A-3b\", \"PDF/X-3\", \"PDF/X-4\", \"PDF/UA\")")
 	case "keywords":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Keywords = value.(*object.String).Value()

@@ -91,7 +91,7 @@ func (ff *FontFamily) GetAttr(name string) (object.Object, bool) {
 
 // SetAttr sets the attribute with the given name on this object.
 func (ff *FontFamily) SetAttr(name string, value object.Object) error {
-	return nil
+	return object.Errorf("cannot set attribute %s on font family", name)
 }
 
 // IsTruthy returns true if the object is considered "truthy".

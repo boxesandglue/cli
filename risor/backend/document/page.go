@@ -8,6 +8,7 @@ import (
 	"github.com/boxesandglue/boxesandglue/backend/node"
 
 	backenddoc "github.com/boxesandglue/boxesandglue/backend/document"
+	rbag "github.com/boxesandglue/cli/risor/backend/bag"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
 
 	"github.com/risor-io/risor/object"
@@ -78,13 +79,29 @@ func (p *Page) Equals(other object.Object) object.Object {
 	return object.False
 }
 
+/*
+	ExtraOffset       bag.ScaledPoint
+	Background        []Object
+	Objects           []Object
+	Userdata          map[any]any
+	Finished          bool
+	StructureElements []*StructureElement
+	Annotations       []pdf.Annotation
+	Spotcolors        []*color.Color
+	Objectnumber      pdf.Objectnumber
+*/
+
 // GetAttr returns the attribute with the given name from this object.
 func (p *Page) GetAttr(name string) (object.Object, bool) {
 	switch name {
+	case "height":
+		return &rbag.RSP{Value: p.Value.Height}, true
 	case "output_at":
 		return object.NewBuiltin("page.output_at", p.outputAt), true
 	case "shipout":
 		return object.NewBuiltin("page.shipout", p.shipout), true
+	case "width":
+		return &rbag.RSP{Value: p.Value.Width}, true
 	}
 
 	return nil, false
@@ -92,6 +109,20 @@ func (p *Page) GetAttr(name string) (object.Object, bool) {
 
 // SetAttr sets the attribute with the given name on this object.
 func (p *Page) SetAttr(name string, value object.Object) error {
+	switch name {
+	case "width":
+		if value.Type() != rbag.ScaledPointType {
+			return object.ArgsErrorf("page.width expects a bag.scaledpoint argument (width)")
+		}
+		p.Value.Width = value.(*rbag.RSP).Value
+		return nil
+	case "height":
+		if value.Type() != rbag.ScaledPointType {
+			return object.ArgsErrorf("page.height expects a bag.scaledpoint argument (height)")
+		}
+		p.Value.Height = value.(*rbag.RSP).Value
+		return nil
+	}
 	return object.Errorf("cannot set attribute %s on page", name)
 }
 

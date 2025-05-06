@@ -27,17 +27,17 @@ func (l *Lang) Interface() interface{} {
 
 // Equals returns True if the given object is equal to this object.
 func (l *Lang) Equals(other object.Object) object.Object {
-	panic("not implemented") // TODO: Implement
+	return object.False
 }
 
 // GetAttr returns the attribute with the given name from this object.
 func (l *Lang) GetAttr(name string) (object.Object, bool) {
-	panic("not implemented") // TODO: Implement
+	return nil, false
 }
 
 // SetAttr sets the attribute with the given name on this object.
 func (l *Lang) SetAttr(name string, value object.Object) error {
-	panic("not implemented") // TODO: Implement
+	return object.Errorf("cannot set attribute %s on lang", name)
 }
 
 // IsTruthy returns true if the object is considered "truthy".
@@ -48,7 +48,7 @@ func (l *Lang) IsTruthy() bool {
 // RunOperation runs an operation on this object with the given
 // right-hand side object.
 func (l *Lang) RunOperation(opType op.BinaryOpType, right object.Object) object.Object {
-	panic("not implemented") // TODO: Implement
+	return object.Errorf("cannot run operation %s on lang", opType)
 }
 
 // Cost returns the incremental processing cost of this object.
