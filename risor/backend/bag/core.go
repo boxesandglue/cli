@@ -58,10 +58,26 @@ func (sp *RSP) IsTruthy() bool {
 // RunOperation runs an operation on this object with the given
 // right-hand side object.
 func (sp *RSP) RunOperation(opType op.BinaryOpType, right object.Object) object.Object {
-	if opType == op.Multiply {
+	switch opType {
+	case op.Add:
+		if right.Type() == object.INT {
+			return &RSP{Value: bag.ScaledPoint(right.Interface().(int64)) + sp.Value}
+		}
+		if right.Type() == ScaledPointType {
+			return &RSP{Value: sp.Value + right.(*RSP).Value}
+		}
+	case op.Subtract:
+		if right.Type() == object.INT {
+			return &RSP{Value: sp.Value - bag.ScaledPoint(right.Interface().(int64))}
+		}
+		if right.Type() == ScaledPointType {
+			return &RSP{Value: sp.Value - right.(*RSP).Value}
+		}
+	case op.Multiply:
 		if right.Type() == object.INT {
 			return &RSP{Value: bag.MultiplyFloat(sp.Value, float64(right.Interface().(int64)))}
 		}
+
 	}
 	return object.Errorf("operation %s not supported on SP", opType)
 }

@@ -241,6 +241,33 @@ func (n *Node) GetAttr(name string) (object.Object, bool) {
 			return object.Nil, true
 		}
 		return &Node{Value: n.Value.Prev()}, true
+	case "height":
+		switch t := n.Value.(type) {
+		case *node.Image:
+			return &rbag.RSP{Value: t.Height}, true
+		case *node.Glyph:
+			return &rbag.RSP{Value: t.Height}, true
+		case *node.HList:
+			return &rbag.RSP{Value: t.Height}, true
+		case *node.Rule:
+			return &rbag.RSP{Value: t.Height}, true
+		case *node.VList:
+			return &rbag.RSP{Value: t.Height}, true
+		}
+	case "width":
+		switch t := n.Value.(type) {
+		case *node.Image:
+			return &rbag.RSP{Value: t.Width}, true
+		case *node.Glyph:
+			return &rbag.RSP{Value: t.Width}, true
+		case *node.HList:
+			return &rbag.RSP{Value: t.Width}, true
+		case *node.Rule:
+			return &rbag.RSP{Value: t.Width}, true
+		case *node.VList:
+			return &rbag.RSP{Value: t.Width}, true
+		}
+
 	}
 	return nil, false
 }

@@ -100,6 +100,9 @@ func Module() *object.Module {
 		"get_language":      object.NewBuiltin("frontend.get_language", frontendGetLanguage),
 		"new_fontsource":    object.NewBuiltin("frontend.new_fontsource", frontendNewFontsource),
 		"new_text":          object.NewBuiltin("frontend.new_text", newText),
+		"new_table":         object.NewBuiltin("frontend.new_table", newTable),
+		"new_tr":            object.NewBuiltin("frontend.new_tr", newTr),
+		"new_td":            object.NewBuiltin("frontend.new_td", newTd),
 		"font_weight_400":   object.NewInt(400),
 		"font_style_normal": object.NewInt(0),
 	})

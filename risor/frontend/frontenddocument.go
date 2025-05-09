@@ -20,6 +20,32 @@ type frontendDocument struct {
 	doc *rdocument.Document
 }
 
+func (fd *frontendDocument) buildTable(ctx context.Context, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return object.ArgsErrorf("document.build_table() takes exactly one argument")
+	}
+	if args[0].Type() != FrontendTableType {
+		return object.ArgsErrorf("document.build_table() expects a list argument (table)")
+	}
+
+	tbl := args[0].(*Table).Value
+	if tbl == nil {
+		return object.ArgsErrorf("document.build_table() expects a table argument")
+	}
+	if fd.value == nil {
+		return object.ArgsErrorf("document.build_table() expects a document argument")
+	}
+	vls, err := fd.value.BuildTable(tbl)
+	if err != nil {
+		return object.NewError(err)
+	}
+	vlists := object.NewList(nil)
+	for _, v := range vls {
+		vlists.Append(&rnode.Node{Value: v})
+	}
+	return vlists
+}
+
 func (fd *frontendDocument) newFontFamily(ctx context.Context, args ...object.Object) object.Object {
 	if len(args) != 1 {
 		return object.ArgsErrorf("frontend.new_fontfamily() takes exactly one argument")
@@ -111,6 +137,8 @@ func (fd *frontendDocument) Equals(other object.Object) object.Object {
 // GetAttr returns the attribute with the given name from this object.
 func (fd *frontendDocument) GetAttr(name string) (object.Object, bool) {
 	switch name {
+	case "build_table":
+		return object.NewBuiltin("frontend.build_table", fd.buildTable), true
 	case "doc":
 		return fd.doc, true
 	case "new_fontfamily":

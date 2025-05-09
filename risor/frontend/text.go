@@ -1,10 +1,14 @@
 package frontend
 
 import (
+	"fmt"
+
 	"github.com/boxesandglue/boxesandglue/frontend"
 	"github.com/risor-io/risor/object"
 	"github.com/risor-io/risor/op"
 )
+
+const FrontendTextType = "frontend.text"
 
 type text struct {
 	Value *frontend.Text
@@ -12,7 +16,7 @@ type text struct {
 
 // Type of the object.
 func (txt *text) Type() object.Type {
-	return "frontend.text"
+	return FrontendTextType
 }
 
 // Inspect returns a string representation of the given object.
@@ -32,6 +36,10 @@ func (txt *text) Equals(other object.Object) object.Object {
 
 // GetAttr returns the attribute with the given name from this object.
 func (txt *text) GetAttr(name string) (object.Object, bool) {
+	switch name {
+	case "settings":
+		return &settings{txt: txt.Value}, true
+	}
 	return nil, false
 }
 
@@ -54,6 +62,8 @@ func (txt *text) SetAttr(name string, value object.Object) error {
 		default:
 			// fmt.Println("~~> not a list")
 		}
+	case "settings":
+		fmt.Println("~~> SetAttr/settings")
 	}
 	return object.Errorf("cannot set attribute %s on text", name)
 }

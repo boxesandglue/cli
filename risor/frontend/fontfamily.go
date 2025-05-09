@@ -75,7 +75,7 @@ func (ff *FontFamily) Interface() interface{} {
 	return ff.Value
 }
 
-// Returns True if the given object is equal to this object.
+// Equals returns True if the given object is equal to this object.
 func (ff *FontFamily) Equals(other object.Object) object.Object {
 	return object.False
 }

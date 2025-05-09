@@ -7,8 +7,9 @@ import (
 
 	rbag "github.com/boxesandglue/cli/risor/backend/bag"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
+	rfrontend "github.com/boxesandglue/cli/risor/frontend"
+	rcxpath "github.com/speedata/risorcxpath"
 
-	"github.com/boxesandglue/cli/risor/frontend"
 	"github.com/risor-io/risor"
 )
 
@@ -36,9 +37,10 @@ func dothings() error {
 		string(data),
 		risor.WithLocalImporter(wd),
 		risor.WithGlobals(map[string]any{
-			"frontend": frontend.Module(),
+			"frontend": rfrontend.Module(),
 			"bag":      rbag.Module(),
 			"node":     rnode.Module(),
+			"cxpath":   rcxpath.Module(),
 		}))
 	if err != nil {
 		return err

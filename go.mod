@@ -2,8 +2,9 @@ module github.com/boxesandglue/cli
 
 require (
 	github.com/boxesandglue/baseline-pdf v1.0.6
-	github.com/boxesandglue/boxesandglue v0.1.8
+	github.com/boxesandglue/boxesandglue v0.1.9
 	github.com/risor-io/risor v1.7.0
+	github.com/speedata/risorcxpath v0.0.1
 )
 
 require (
@@ -12,9 +13,13 @@ require (
 	github.com/boxesandglue/textlayout v1.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/speedata/cxpath v0.0.3 // indirect
+	github.com/speedata/goxml v1.0.4 // indirect
+	github.com/speedata/goxpath v1.0.3 // indirect
 	github.com/speedata/hyphenation v1.0.1 // indirect
 	golang.org/x/image v0.18.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

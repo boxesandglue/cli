@@ -7,6 +7,7 @@ import (
 	"github.com/boxesandglue/boxesandglue/backend/bag"
 	"github.com/boxesandglue/boxesandglue/backend/document"
 	"github.com/boxesandglue/boxesandglue/frontend"
+
 	rbag "github.com/boxesandglue/cli/risor/backend/bag"
 	rlang "github.com/boxesandglue/cli/risor/backend/lang"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
@@ -60,6 +61,7 @@ func (doc *Document) finish(ctx context.Context, args ...object.Object) object.O
 	for _, entry := range doc.Attachments.Interface().([]any) {
 		attachment := document.Attachment{}
 		value := entry.(map[string]any)
+		var name string
 		for k, v := range value {
 			switch k {
 			case "filename":
@@ -68,7 +70,7 @@ func (doc *Document) finish(ctx context.Context, args ...object.Object) object.O
 					if err != nil {
 						return object.NewError(err)
 					}
-					attachment.Name = v
+					name = v
 					attachment.Data = data
 				}
 			case "mimetype":
@@ -79,7 +81,15 @@ func (doc *Document) finish(ctx context.Context, args ...object.Object) object.O
 				if v, ok := v.(string); ok {
 					attachment.Description = v
 				}
+			case "visiblename":
+				if v, ok := v.(string); ok {
+					attachment.Name = v
+				}
+
 			}
+		}
+		if attachment.Name == "" {
+			attachment.Name = name
 		}
 		bag.Logger.Info("Add attachment", "filename", attachment.Name)
 		attachments = append(attachments, attachment)
@@ -88,6 +98,21 @@ func (doc *Document) finish(ctx context.Context, args ...object.Object) object.O
 	doc.PDFDoc.Attachments = attachments
 	doc.PDFDoc.Finish()
 	return nil
+}
+
+func (doc *Document) loadColorprofile(ctx context.Context, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return object.ArgsErrorf("document.load_colorprofile() takes exactly one argument (filename)")
+	}
+	if args[0].Type() != object.STRING {
+		return object.ArgsErrorf("document.load_colorprofile() expects a string argument (filename)")
+	}
+	filename := args[0].(*object.String).Value()
+	cpf, err := doc.PDFDoc.LoadColorprofile(filename)
+	if err != nil {
+		return object.NewError(err)
+	}
+	return &ColorProfile{Value: cpf}
 }
 
 func (doc *Document) loadImageFile(ctx context.Context, args ...object.Object) object.Object {
@@ -158,6 +183,8 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 		return object.NewString(doc.PDFDoc.Filename), true
 	case "finish":
 		return object.NewBuiltin("document.finish", doc.finish), true
+	case "load_colorprofile":
+		return object.NewBuiltin("document.load_colorprofile", doc.loadColorprofile), true
 	case "load_imagefile":
 		return object.NewBuiltin("document.load_image_file", doc.loadImageFile), true
 	case "new_page":
@@ -173,6 +200,12 @@ func (doc *Document) GetAttr(name string) (object.Object, bool) {
 // SetAttr sets the attribute with the given name on this object.
 func (doc *Document) SetAttr(name string, value object.Object) error {
 	switch name {
+	case "additional_xml_metadata":
+		if value.Type() == object.STRING {
+			doc.PDFDoc.AdditionalXMLMetadata = value.(*object.String).Value()
+			return nil
+		}
+		return object.Errorf("additional_metadata must be a string")
 	case "author":
 		if value.Type() == object.STRING {
 			doc.PDFDoc.Author = value.(*object.String).Value()
