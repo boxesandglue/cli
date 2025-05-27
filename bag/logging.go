@@ -54,9 +54,23 @@ func (lh *logHandler) WithGroup(name string) slog.Handler {
 	return lh
 }
 
-func setupLog() {
+func setupLog(level string) {
 	sl := slog.New(&logHandler{})
 	slog.SetDefault(sl)
 	bag.SetLogger(slog.Default())
+	switch strings.ToLower(level) {
+	case "debug":
+		loglevel.Set(slog.LevelDebug)
+	case "info":
+		loglevel.Set(slog.LevelInfo)
+	case "warn":
+		loglevel.Set(slog.LevelWarn)
+	case "error":
+		loglevel.Set(slog.LevelError)
+	case "fatal":
+		loglevel.Set(slog.LevelError)
+	case "panic":
+		loglevel.Set(slog.LevelError)
+	}
 	return
 }
