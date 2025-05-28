@@ -1,7 +1,7 @@
 .vscode
 fonts
 bin
-*pdf
+/out*pdf
 *.rsr
 zugferd.xml
 AdobeRGB1998.icc

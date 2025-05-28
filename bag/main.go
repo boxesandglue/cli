@@ -6,7 +6,9 @@ import (
 	"os"
 
 	rbag "github.com/boxesandglue/cli/risor/backend/bag"
+	rfont "github.com/boxesandglue/cli/risor/backend/font"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
+	rbaseline "github.com/boxesandglue/cli/risor/baseline-pdf"
 	rfrontend "github.com/boxesandglue/cli/risor/frontend"
 	"github.com/speedata/optionparser"
 	rcxpath "github.com/speedata/risorcxpath"
@@ -61,11 +63,14 @@ func dothings() error {
 		string(data),
 		risor.WithLocalImporter(wd),
 		risor.WithConcurrency(),
+		risor.WithStackTrace(),
 		risor.WithGlobals(map[string]any{
-			"frontend": rfrontend.Module(),
-			"bag":      rbag.Module(),
-			"node":     rnode.Module(),
-			"cxpath":   rcxpath.Module(),
+			"frontend":    rfrontend.Module(),
+			"bag":         rbag.Module(),
+			"node":        rnode.Module(),
+			"font":        rfont.Module(),
+			"cxpath":      rcxpath.Module(),
+			"baselinepdf": rbaseline.Module(),
 		}))
 	if err != nil {
 		return err
