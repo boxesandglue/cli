@@ -2,7 +2,6 @@ package pdf
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 
@@ -42,7 +41,7 @@ func newBaselinePDF(ctx context.Context, args ...object.Object) object.Object {
 	case object.FILE:
 		w = firstArg.(*object.File).Value()
 	default:
-		fmt.Println(`~~> firstArg`, firstArg.Type())
+		// fmt.Println(`~~> firstArg`, firstArg.Type())
 	}
 
 	return &PDF{

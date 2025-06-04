@@ -6,6 +6,7 @@ import (
 
 	"github.com/boxesandglue/boxesandglue/backend/bag"
 	"github.com/boxesandglue/boxesandglue/frontend"
+	rcolor "github.com/boxesandglue/cli/risor/backend/color"
 	"github.com/risor-io/risor/object"
 	"github.com/risor-io/risor/op"
 )
@@ -22,103 +23,103 @@ func settingTostring(s frontend.SettingType) string {
 
 func stringToSetting(s string) frontend.SettingType {
 	switch s {
-	case "SettingBackgroundColor":
+	case "backgroundcolor":
 		return frontend.SettingBackgroundColor
-	case "SettingBorderBottomColor":
+	case "borderbottomcolor":
 		return frontend.SettingBorderBottomColor
-	case "SettingBorderBottomLeftRadius":
+	case "borderbottomleftradius":
 		return frontend.SettingBorderBottomLeftRadius
-	case "SettingBorderBottomRightRadius":
+	case "borderbottomrightradius":
 		return frontend.SettingBorderBottomRightRadius
-	case "SettingBorderBottomStyle":
+	case "borderbottomstyle":
 		return frontend.SettingBorderBottomStyle
-	case "SettingBorderBottomWidth":
+	case "borderbottomwidth":
 		return frontend.SettingBorderBottomWidth
-	case "SettingBorderLeftColor":
+	case "borderleftcolor":
 		return frontend.SettingBorderLeftColor
-	case "SettingBorderLeftStyle":
+	case "borderleftstyle":
 		return frontend.SettingBorderLeftStyle
-	case "SettingBorderLeftWidth":
+	case "borderleftwidth":
 		return frontend.SettingBorderLeftWidth
-	case "SettingBorderRightColor":
+	case "borderrightcolor":
 		return frontend.SettingBorderRightColor
-	case "SettingBorderRightStyle":
+	case "borderrightstyle":
 		return frontend.SettingBorderRightStyle
-	case "SettingBorderRightWidth":
+	case "borderrightwidth":
 		return frontend.SettingBorderRightWidth
-	case "SettingBorderTopColor":
+	case "bordertopcolor":
 		return frontend.SettingBorderTopColor
-	case "SettingBorderTopLeftRadius":
+	case "bordertopleftradius":
 		return frontend.SettingBorderTopLeftRadius
-	case "SettingBorderTopRightRadius":
+	case "bordertoprightradius":
 		return frontend.SettingBorderTopRightRadius
-	case "SettingBorderTopStyle":
+	case "bordertopstyle":
 		return frontend.SettingBorderTopStyle
-	case "SettingBorderTopWidth":
+	case "bordertopwidth":
 		return frontend.SettingBorderTopWidth
-	case "SettingBox":
+	case "box":
 		return frontend.SettingBox
-	case "SettingColor":
+	case "color":
 		return frontend.SettingColor
-	case "SettingDebug":
+	case "debug":
 		return frontend.SettingDebug
-	case "SettingFontExpansion":
+	case "fontexpansion":
 		return frontend.SettingFontExpansion
-	case "SettingFontFamily":
+	case "fontfamily":
 		return frontend.SettingFontFamily
-	case "SettingFontWeight":
+	case "fontweight":
 		return frontend.SettingFontWeight
-	case "SettingHAlign":
+	case "halign":
 		return frontend.SettingHAlign
-	case "SettingHangingPunctuation":
+	case "hangingpunctuation":
 		return frontend.SettingHangingPunctuation
-	case "SettingHeight":
+	case "height":
 		return frontend.SettingHeight
-	case "SettingHyperlink":
+	case "hyperlink":
 		return frontend.SettingHyperlink
-	case "SettingIndentLeft":
+	case "indentleft":
 		return frontend.SettingIndentLeft
-	case "SettingIndentLeftRows":
+	case "indentleftrows":
 		return frontend.SettingIndentLeftRows
-	case "SettingLeading":
+	case "leading":
 		return frontend.SettingLeading
-	case "SettingMarginBottom":
+	case "marginbottom":
 		return frontend.SettingMarginBottom
-	case "SettingMarginLeft":
+	case "marginleft":
 		return frontend.SettingMarginLeft
-	case "SettingMarginRight":
+	case "marginright":
 		return frontend.SettingMarginRight
-	case "SettingMarginTop":
+	case "margintop":
 		return frontend.SettingMarginTop
-	case "SettingOpenTypeFeature":
+	case "opentypefeature":
 		return frontend.SettingOpenTypeFeature
-	case "SettingPaddingBottom":
+	case "paddingbottom":
 		return frontend.SettingPaddingBottom
-	case "SettingPaddingLeft":
+	case "paddingleft":
 		return frontend.SettingPaddingLeft
-	case "SettingPaddingRight":
+	case "paddingright":
 		return frontend.SettingPaddingRight
-	case "SettingPaddingTop":
+	case "paddingtop":
 		return frontend.SettingPaddingTop
-	case "SettingPrepend":
+	case "prepend":
 		return frontend.SettingPrepend
-	case "SettingPreserveWhitespace":
+	case "preservewhitespace":
 		return frontend.SettingPreserveWhitespace
-	case "SettingSize":
+	case "size":
 		return frontend.SettingSize
-	case "SettingStyle":
+	case "style":
 		return frontend.SettingStyle
-	case "SettingTabSize":
+	case "tabsize":
 		return frontend.SettingTabSize
-	case "SettingTabSizeSpaces":
+	case "tabsizespaces":
 		return frontend.SettingTabSizeSpaces
-	case "SettingTextDecorationLine":
+	case "textdecorationline":
 		return frontend.SettingTextDecorationLine
-	case "SettingVAlign":
+	case "valign":
 		return frontend.SettingVAlign
-	case "SettingWidth":
+	case "width":
 		return frontend.SettingWidth
-	case "SettingYOffset":
+	case "yoffset":
 		return frontend.SettingYOffset
 	}
 	return frontend.SettingType(0)
@@ -301,8 +302,8 @@ func (m *settings) GetWithObject(key *object.String) object.Object {
 	if !found {
 		return object.Nil
 	}
-	_ = value
-	return object.Nil
+
+	return object.NewInt(int64(value.(frontend.SettingType)))
 }
 
 func (m *settings) Get(key string) object.Object {
@@ -352,9 +353,19 @@ func (m *settings) SetItem(key, value object.Object) *object.Error {
 		return object.TypeErrorf("type error: map key must be a string (got %s)", key.Type())
 	}
 	switch strObj.String() {
-	case "SettingFontfamily":
+	case "backgroundcolor":
+		if value.Type() == rcolor.BackendColorType {
+			v := value.(*rcolor.RColor).Value
+			m.txt.Settings[frontend.SettingBackgroundColor] = v
+		}
+	case "color":
+		if value.Type() == rcolor.BackendColorType {
+			v := value.(*rcolor.RColor).Value
+			m.txt.Settings[frontend.SettingColor] = v
+		}
+	case "fontfamily":
 		m.txt.Settings[frontend.SettingFontFamily] = value.(*FontFamily).Value
-	case "SettingHAlign":
+	case "halign":
 		switch value.(*object.String).String() {
 		case "left":
 			m.txt.Settings[frontend.SettingHAlign] = frontend.HAlignLeft
@@ -367,8 +378,49 @@ func (m *settings) SetItem(key, value object.Object) *object.Error {
 		default:
 			return object.TypeErrorf("type error: invalid value for SettingHAlign: %T", value)
 		}
-	case "SettingFontWeight":
-		m.txt.Settings[frontend.SettingFontWeight] = int(value.(*object.Int).Value())
+	case "fontexpansion":
+		switch value.Type() {
+		case object.FLOAT:
+			// Convert the float value to a font expansion
+			m.txt.Settings[frontend.SettingFontExpansion] = value.(*object.Float).Value()
+		}
+	case "fontstyle":
+		switch value.Type() {
+		case object.STRING:
+			// Convert the string value to a font style
+			switch value.(*object.String).String() {
+			case "normal":
+				m.txt.Settings[frontend.SettingStyle] = frontend.FontStyleNormal
+			case "italic":
+				m.txt.Settings[frontend.SettingStyle] = frontend.FontStyleItalic
+			case "oblique":
+				m.txt.Settings[frontend.SettingStyle] = frontend.FontStyleOblique
+			default:
+				return object.TypeErrorf("type error: invalid value for SettingStyle: %s", value.(*object.String).String())
+			}
+		}
+	case "fontweight":
+		switch value.Type() {
+		case object.INT:
+			// Convert the int value to a font weight
+			m.txt.Settings[frontend.SettingFontWeight] = int(value.(*object.Int).Value())
+		case object.STRING:
+			switch value.(*object.String).String() {
+			case "normal":
+				m.txt.Settings[frontend.SettingFontWeight] = frontend.FontWeight400
+			case "bold":
+				m.txt.Settings[frontend.SettingFontWeight] = frontend.FontWeight700
+			}
+		}
+	case "hangingpunctuation":
+		switch value.Type() {
+		case object.BOOL:
+			// Convert the bool value to a hanging punctuation setting
+			hp := value.(*object.Bool).Value()
+			if hp {
+				m.txt.Settings[frontend.SettingHangingPunctuation] = frontend.HangingPunctuation(1)
+			}
+		}
 	default:
 		bag.Logger.Error("Unhandled setting", "value", strObj.String())
 	}

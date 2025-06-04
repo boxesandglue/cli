@@ -4,6 +4,7 @@ import (
 	"github.com/boxesandglue/boxesandglue/backend/bag"
 	"github.com/boxesandglue/boxesandglue/frontend"
 	rbag "github.com/boxesandglue/cli/risor/backend/bag"
+	rcolor "github.com/boxesandglue/cli/risor/backend/color"
 	rdocument "github.com/boxesandglue/cli/risor/backend/document"
 	rnode "github.com/boxesandglue/cli/risor/backend/node"
 
@@ -44,6 +45,18 @@ func (fd *frontendDocument) buildTable(ctx context.Context, args ...object.Objec
 		vlists.Append(&rnode.Node{Value: v})
 	}
 	return vlists
+}
+func (fd *frontendDocument) getColor(ctx context.Context, args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return object.ArgsErrorf("frontend.get_color() takes exactly one argument")
+	}
+	if args[0].Type() != object.STRING {
+		return object.ArgsErrorf("frontend.get_color() expects a string argument (color name)")
+	}
+	colorName := args[0].(*object.String).Value()
+	col := fd.value.GetColor(colorName)
+	backendCol := rcolor.RColor{Value: col}
+	return &backendCol
 }
 
 func (fd *frontendDocument) newFontFamily(ctx context.Context, args ...object.Object) object.Object {
@@ -141,6 +154,8 @@ func (fd *frontendDocument) GetAttr(name string) (object.Object, bool) {
 		return object.NewBuiltin("frontend.build_table", fd.buildTable), true
 	case "doc":
 		return fd.doc, true
+	case "get_color":
+		return object.NewBuiltin("frontend.get_color", fd.getColor), true
 	case "new_fontfamily":
 		return object.NewBuiltin("frontend.new_fontfamily", fd.newFontFamily), true
 	case "format_paragraph":

@@ -1,8 +1,6 @@
 package frontend
 
 import (
-	"fmt"
-
 	"github.com/boxesandglue/boxesandglue/frontend"
 	"github.com/risor-io/risor/object"
 	"github.com/risor-io/risor/op"
@@ -54,16 +52,18 @@ func (txt *text) SetAttr(name string, value object.Object) error {
 				switch t := itm.(type) {
 				case *object.String:
 					txt.Value.Items = append(txt.Value.Items, t.Value())
-					return nil
+				case *text:
+					txt.Value.Items = append(txt.Value.Items, t.Value)
 				default:
 					// fmt.Printf("~~> SetAttr/List/ itm %T\n", itm)
 				}
 			}
+			return nil
 		default:
 			// fmt.Println("~~> not a list")
 		}
 	case "settings":
-		fmt.Println("~~> SetAttr/settings")
+		// fmt.Println("~~> SetAttr/settings")
 	}
 	return object.Errorf("cannot set attribute %s on text", name)
 }
