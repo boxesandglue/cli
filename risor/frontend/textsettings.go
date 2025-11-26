@@ -133,11 +133,11 @@ func AsSettings(obj object.Object) (*settings, *object.Error) {
 	return m, nil
 }
 
-func (s *settings) Type() object.Type {
+func (m *settings) Type() object.Type {
 	return settingsType
 }
 
-func (s *settings) Inspect() string {
+func (m *settings) Inspect() string {
 	return "settings"
 }
 
@@ -250,8 +250,8 @@ func (m *settings) ListItems() *object.List {
 	return object.NewList(nil)
 }
 
-func (s *settings) Clear() {
-	s.txt.Settings = frontend.TypesettingSettings{}
+func (m *settings) Clear() {
+	m.txt.Settings = frontend.TypesettingSettings{}
 }
 
 func (m *settings) Copy() *settings {
@@ -273,25 +273,25 @@ func (m *settings) Update(other *settings) {
 	bag.Logger.Error("Unhandled function", "function", "Update", "where", "textsettings.go")
 }
 
-func (s *settings) SortedKeys() []string {
-	keys := make([]string, 0, len(s.txt.Items))
-	for k := range s.txt.Settings {
+func (m *settings) SortedKeys() []string {
+	keys := make([]string, 0, len(m.txt.Items))
+	for k := range m.txt.Settings {
 		keys = append(keys, settingTostring(k))
 	}
 	sort.Strings(keys)
 	return keys
 }
 
-func (s *settings) Keys() *object.List {
-	items := make([]object.Object, 0, len(s.txt.Settings))
-	for _, k := range s.SortedKeys() {
+func (m *settings) Keys() *object.List {
+	items := make([]object.Object, 0, len(m.txt.Settings))
+	for _, k := range m.SortedKeys() {
 		items = append(items, object.NewString(k))
 	}
 	l := object.NewList(items)
 	return l
 }
 
-func (s *settings) Values() *object.List {
+func (m *settings) Values() *object.List {
 	// bag.Logger.Error("Unhandled function", "function", "Values","where", "textsettings.go")
 	l := object.NewList(nil)
 	return l
@@ -316,13 +316,13 @@ func (m *settings) GetWithDefault(key string, defaultValue object.Object) object
 	return nil
 }
 
-func (s *settings) Delete(key string) object.Object {
+func (m *settings) Delete(key string) object.Object {
 	return object.Nil
 }
 
-func (s *settings) Interface() any {
-	result := make(map[string]any, len(s.txt.Settings))
-	for k, v := range s.txt.Settings {
+func (m *settings) Interface() any {
+	result := make(map[string]any, len(m.txt.Settings))
+	for k, v := range m.txt.Settings {
 		result[settingTostring(k)] = v
 	}
 	return result

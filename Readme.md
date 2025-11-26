@@ -38,7 +38,7 @@ over the lazy dog with a very long line that should be wrapped`
 
 str = strings.join(strings.fields(str)," ")
 
-f := frontend.new('out.pdf')
+f := frontend.new("out.pdf")
 backend_doc := f.doc
 backend_doc.language = frontend.get_language("en")
 
@@ -49,6 +49,7 @@ ff := setup_fonts(f)
 p := f.doc.new_page()
 para := frontend.new_text()
 para.items = [str]
+
 vlist := f.format_paragraph({
 	text: para,
 	width: bag.sp("225pt"),

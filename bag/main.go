@@ -27,6 +27,7 @@ func dothings() error {
 	op.Banner = "bag - a frontend for boxes and glue"
 	op.Coda = "\nUsage: bag [options] <filename>"
 	op.On("--loglevel LVL", "Set the log level (debug, info, warn, error)", defaults)
+	op.Command("help", "Show the help message")
 	op.Command("version", "Print version and exit")
 	if err := op.Parse(); err != nil {
 		return err
@@ -36,6 +37,9 @@ func dothings() error {
 		switch arg {
 		case "version":
 			fmt.Printf("bag version %s\n", Version)
+			return nil
+		case "help":
+			op.Help()
 			return nil
 		default:
 			mainfile = arg
@@ -63,7 +67,6 @@ func dothings() error {
 		string(data),
 		risor.WithLocalImporter(wd),
 		risor.WithConcurrency(),
-		risor.WithStackTrace(),
 		risor.WithGlobals(map[string]any{
 			"frontend":    rfrontend.Module(),
 			"bag":         rbag.Module(),

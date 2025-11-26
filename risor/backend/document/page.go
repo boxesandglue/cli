@@ -84,7 +84,6 @@ func (p *Page) Equals(other object.Object) object.Object {
 	Background        []Object
 	Objects           []Object
 	Userdata          map[any]any
-	Finished          bool
 	StructureElements []*StructureElement
 	Annotations       []pdf.Annotation
 	Spotcolors        []*color.Color
@@ -94,6 +93,8 @@ func (p *Page) Equals(other object.Object) object.Object {
 // GetAttr returns the attribute with the given name from this object.
 func (p *Page) GetAttr(name string) (object.Object, bool) {
 	switch name {
+	case "finished":
+		return object.NewBool(p.Value.Finished), true
 	case "height":
 		return &rbag.RSP{Value: p.Value.Height}, true
 	case "output_at":
