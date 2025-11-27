@@ -53,9 +53,9 @@ func (face *Face) GetAttr(name string) (object.Object, bool) {
 	case "postscript_name":
 		return object.NewString(face.Value.PostscriptName), true
 	case "register_codepoint":
-		return object.NewBuiltin("pdf.face.register_char", face.registerCodepoint), true
+		return object.NewBuiltin("pdf.face.register_codepoint", face.registerCodepoint), true
 	case "register_codepoints":
-		return object.NewBuiltin("pdf.face.register_chars", face.registerCodepoints), true
+		return object.NewBuiltin("pdf.face.register_codepoints", face.registerCodepoints), true
 	case "units_per_em":
 		return object.NewInt(int64(face.Value.UnitsPerEM)), true
 	}
@@ -125,7 +125,7 @@ func (face *Face) codepoints(ctx context.Context, args ...object.Object) object.
 
 func (face *Face) registerCodepoint(ctx context.Context, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return object.ArgsErrorf("pdf.face.register_char() takes exactly one argument")
+		return object.ArgsErrorf("pdf.face.register_codepoint() takes exactly one argument")
 	}
 	codepointObj := args[0]
 	if codepointObj.Type() != object.INT {
@@ -138,7 +138,7 @@ func (face *Face) registerCodepoint(ctx context.Context, args ...object.Object) 
 
 func (face *Face) registerCodepoints(ctx context.Context, args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return object.ArgsErrorf("pdf.face.register_chars() takes exactly one argument")
+		return object.ArgsErrorf("pdf.face.register_codepoints() takes exactly one argument")
 	}
 	codepointsObj := args[0]
 	if codepointsObj.Type() != object.LIST {
