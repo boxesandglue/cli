@@ -1,7 +1,10 @@
-[![Documentation](https://img.shields.io/badge/doc-documentation-73FA79)](https://boxesandglue.dev/cli)
+# ARCHIVED
 
+> **This project has been archived.** This experiment has been replaced by [glu](https://github.com/boxesandglue/glu), which provides a more complete command-line interface for boxes and glue.
 
-# Command line for boxes and glue
+---
+
+# Command line for boxes and glue (archived)
 
 Experimental and incomplete
 
@@ -69,6 +72,5 @@ printf("finished in %.2fms\n",time.since(now) * 1000)
 
 Contact: gundlach@speedata.de<br>
 License: BSD-3 clause<br>
-Status: experimental, unstable, expect changes<br>
-Documentation: <https://boxesandglue.dev/cli><br>
+Status: **archived** – superseded by [glu](https://github.com/boxesandglue/glu)<br>
 Legal info: boxes and glue is a registered trademark
